@@ -4,12 +4,20 @@
   gather_facts: no
 
   tasks:
-  - name: run local python script
+  - name: run local python script to create nacl.json
     shell: ./main.py
-    register: mystdout
+    register: resultstdout
 
-    # multiline stdout
-  - debug: msg="{{ mystdout.stdout_lines }}"
+  - debug: msg="{{ resultstdout.stdout_lines }}"
+
+  - name: register nacl.json content
+    shell: cat ./main.py
+    register: jsonnaclstdout
+
+  - set_fact:
+      from_lookup_with_from_json: "{{ lookup('file','nacl.json') | from_json }}"
+
+  - debug: var=from_lookup_with_from_json
 
   - name: "INGRESS - Create and associate production DMZ network ACL with DMZ subnets"
     ec2_vpc_nacl:
@@ -24,9 +32,8 @@
       ingress:
           # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code, port from, port to
           - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
-          - [201, 'tcp', 'allow', '0.0.0.0/0', null, null, 80, 80]
-          - [202, 'icmp', 'allow', '0.0.0.0/0', 0, 8]
       state: 'present'
+    loop: '{{ s3_ranges }}'
 
   - name: "EGRESS - Create and associate production DMZ network ACL with DMZ subnets"
     ec2_vpc_nacl:
@@ -41,3 +48,4 @@
       egress:
           - [200, 'all', 'allow', '0.0.0.0/0', null, null, null, null]
       state: 'present'
+    loop: '{{ s3_ranges }}'

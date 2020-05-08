@@ -21,9 +21,6 @@ for item in ip_ranges:
 
 ################################################################################################
 ################################################################################################
-print("#########################################")
-print("POPULATE JSON FILE")
-print("#########################################")
 
 data = {}
 
@@ -66,11 +63,6 @@ for ip in s3_ip_list:
 with open('nacl.json', 'w') as outfile: 
   json.dump(data, outfile)
 
-# open file
-with open('nacl.json', 'r') as json_file:
-  parsed_data = json.load(json_file)
-
-print(json.dumps(parsed_data, indent=2))
 
 
 
