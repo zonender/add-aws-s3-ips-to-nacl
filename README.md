@@ -24,6 +24,20 @@ pipenv shell
 3. Install boto3, botocore and json:
 
 ```bash
-pipenv install 
+pipenv install boto3 botocore json requests
+```
+
+4. Locate the path of your virtual environment interpreter by running:
+
+```bash
+pipenv --py
+```
+
+you will need this path, it will replace the value of the variable: ansible_python_interpreter in the hosts file located on the root of the project directory.
+
+4. To run:
+
+```bash
+AWS_PROFILE=myawsprofile ansible-playbook -i hosts -e 'region=us-east-1' main.yml
 ```
 

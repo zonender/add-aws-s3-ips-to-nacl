@@ -31,7 +31,7 @@
   - name: "EGRESS - Create and associate production DMZ network ACL with DMZ subnets"
     ec2_vpc_nacl:
       vpc_id: vpc-092733162f7694d18
-      name: prod-dmz-nacl
+      name: SOLOMON
       region: "{{ region }}"
       subnets: ['mysubnet3', 'mysubnet2']
       tags:
