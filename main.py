@@ -2,6 +2,29 @@
 import json
 import requests
 
+################################################################################################
+################################################################################################
+print("#########################################")
+print("S3 IP RANGES IN US-EAST-1")
+print("#########################################")
+
+ip_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()['prefixes']
+
+selected_service = 'S3'
+selected_region = 'us-east-1'
+s3_ip_list = []
+
+for item in ip_ranges:
+  if item['service'] == selected_service and item['region'] == selected_region:
+    print(item['ip_prefix'])
+    s3_ip_list.append(item['ip_prefix'])
+
+################################################################################################
+################################################################################################
+print("#########################################")
+print("POPULATE JSON FILE")
+print("#########################################")
+
 data = {}
 
 # egress rules portion
@@ -57,20 +80,7 @@ with open('nacl.json', 'w') as outfile:
 # open file
 with open('nacl.json', 'r') as json_file:
   data = json.load(json_file)
-################################################################################################
-################################################################################################
-print("#########################################")
-print("S3 IP RANGES IN US-EAST-1")
-print("#########################################")
 
-ip_ranges = requests.get('https://ip-ranges.amazonaws.com/ip-ranges.json').json()['prefixes']
-
-selected_service = 'S3'
-selected_region = 'us-east-1'
-
-for item in ip_ranges:
-  if item['service'] == selected_service and item['region'] == selected_region:
-    print(item['ip_prefix'])
 
 
 
