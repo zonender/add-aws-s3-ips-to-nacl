@@ -14,10 +14,30 @@
     shell: cat ./main.py
     register: jsonnaclstdout
 
+    # display json content
   - set_fact:
       from_lookup_with_from_json: "{{ lookup('file','nacl.json') | from_json }}"
 
   - debug: var=from_lookup_with_from_json
+  #   # to display var content:
+  # - debug:
+  #     msg: "{{ rule_no }} - {{ protocol }}"
+
+  #####################################################
+
+    # looping attemps ingress
+  - name: "Define egress vars"
+    set_fact:
+      rule_no: "{{ item.rule_no }}"
+      protocol: "{{ item.protocol }}"
+      allow_deny: "{{ item.allow_deny }}"
+      cidr: "{{ item.cidr }}"
+      icmp_code: "{{ item.icmp_code }}"
+      icmp_type: "{{ item.icmp_type }}"
+      port_from: "{{ item.port_from }}"
+      port_to: "{{ item.port_to }}"
+
+    loop: "{{ from_lookup_with_from_json | json_query('egress[*]') }}"
 
   - name: "INGRESS - Create and associate production DMZ network ACL with DMZ subnets"
     ec2_vpc_nacl:
@@ -31,21 +51,54 @@
         Description: production DMZ
       ingress:
           # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code, port from, port to
-          - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
+          # - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
+          - ["{{ rule_no | int + 0 }}", "{{ protocol }}", "{{ allow_deny }}", "{{ cidr }}", "{{ icmp_type }}", "{{ icmp_code }}", "{{ port_from | int + 0 }}", "{{ port_to | int + 0 }}"]
       state: 'present'
-    loop: '{{ s3_ranges }}'
+    loop: "{{ from_lookup_with_from_json | json_query('ingress[*]') }}"
 
-  - name: "EGRESS - Create and associate production DMZ network ACL with DMZ subnets"
-    ec2_vpc_nacl:
-      vpc_id: vpc-092733162f7694d18
-      name: SOLOMON
-      region: "{{ region }}"
-      subnets: ['mysubnet3', 'mysubnet2']
-      tags:
-        CostCode: CC1234
-        Project: phoenix
-        Description: production DMZ
-      egress:
-          - [200, 'all', 'allow', '0.0.0.0/0', null, null, null, null]
-      state: 'present'
-    loop: '{{ s3_ranges }}'
+
+
+  # # looping attemps ingress
+  # - name: "Display all rule numbers from json"
+  #   debug:
+  #     var: item.protocol
+  #   loop: "{{ from_lookup_with_from_json | json_query('egress[*]') }}"
+
+  # # looping attemps egress
+  # - name: "Display all rule numbers from json"
+  #   debug:
+  #     var: item.protocol
+  #   loop: "{{ from_lookup_with_from_json | json_query('ingress[*]') }}"
+
+  # - name: "INGRESS - Create and associate production DMZ network ACL with DMZ subnets"
+  #   ec2_vpc_nacl:
+  #     vpc_id: vpc-092733162f7694d18
+  #     name: prod-dmz-nacl
+  #     region: "{{ region }}"
+  #     subnets: ['mysubnet3', 'mysubnet2']
+  #     tags:
+  #       CostCode: CC1234
+  #       Project: phoenix
+  #       Description: production DMZ
+  #     ingress:
+  #         # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code, port from, port to
+  #         # - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
+  #         - [item.rule_no, item.protocol, item.allow_deny, item.cidr, item.icmp_type, item.icmp_code, item.port_from, item.port_to]
+  #     state: 'present'
+  #   loop: "{{ from_lookup_with_from_json | json_query('ingress[*]') }}"
+
+  # - name: "EGRESS - Create and associate production DMZ network ACL with DMZ subnets"
+  #   ec2_vpc_nacl:
+  #     vpc_id: vpc-092733162f7694d18
+  #     name: SOLOMON
+  #     region: "{{ region }}"
+  #     subnets: ['mysubnet3', 'mysubnet2']
+  #     tags:
+  #       CostCode: CC1234
+  #       Project: phoenix
+  #       Description: production DMZ
+  #     egress:
+  #         # - [200, 'all', 'allow', '0.0.0.0/0', null, null, null, null]
+  #         - [item.rule_no, item.protocol, item.allow_deny, item.cidr, item.icmp_type, item.icmp_code, item.port_from, item.port_to]
+  #     state: 'present'
+  #   loop: "{{ from_lookup_with_from_json | json_query('egress[*]') }}"
