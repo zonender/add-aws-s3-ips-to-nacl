@@ -27,59 +27,50 @@ print("#########################################")
 
 data = {}
 
-# egress rules portion
 data['egress'] = []
-data['egress'].append({
-  'rule_no': '200',
-  'protocol': 'tcp',
-  'allow_deny': 'allow',
-  'cidr': '0.0.0.0/0',
-  'icmp_type': 'null',
-  'icmp_code': 'null',
-  'port_from': '22',
-  'port_to': '22'
-})
-data['egress'].append({
-  'rule_no': '201',
-  'protocol': 'tcp',
-  'allow_deny': 'allow',
-  'cidr': '0.0.0.0/0',
-  'icmp_type': 'null',
-  'icmp_code': 'null',
-  'port_from': '22',
-  'port_to': '22'
-})
-
-# ingress rules portion
 data['ingress'] = []
-data['ingress'].append({
-  'rule_no': '200',
-  'protocol': 'tcp',
-  'allow_deny': 'allow',
-  'cidr': '0.0.0.0/0',
-  'icmp_type': 'null',
-  'icmp_code': 'null',
-  'port_from': '22',
-  'port_to': '22'
-})
-data['ingress'].append({
-  'rule_no': '201',
-  'protocol': 'tcp',
-  'allow_deny': 'allow',
-  'cidr': '0.0.0.0/0',
-  'icmp_type': 'null',
-  'icmp_code': 'null',
-  'port_from': '22',
-  'port_to': '22'
-})
+port_from = 1234
+port_to = 1234
 
-#save
+# ingress
+rule_number = 199
+for ip in s3_ip_list:
+  rule_number += 1
+  data['ingress'].append({
+    'rule_no': f'{rule_number}',
+    'protocol': 'tcp',
+    'allow_deny': 'allow',
+    'cidr': f'{ip}',
+    'icmp_type': 'null',
+    'icmp_code': 'null',
+    'port_from': f'{port_from}',
+    'port_to': f'{port_to}'
+  })
+
+# egress
+rule_number = 199
+for ip in s3_ip_list:
+  rule_number += 1
+  data['egress'].append({
+    'rule_no': f'{rule_number}',
+    'protocol': 'tcp',
+    'allow_deny': 'allow',
+    'cidr': f'{ip}',
+    'icmp_type': 'null',
+    'icmp_code': 'null',
+    'port_from': f'{port_from}',
+    'port_to': f'{port_to}'
+  })
+
+# save
 with open('nacl.json', 'w') as outfile: 
   json.dump(data, outfile)
 
 # open file
 with open('nacl.json', 'r') as json_file:
-  data = json.load(json_file)
+  parsed_data = json.load(json_file)
+
+print(json.dumps(parsed_data, indent=2))
 
 
 
