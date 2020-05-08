@@ -1,0 +1,2 @@
+[localhost]
+localhost   ansible_connection=local    ansible_python_interpreter=/home/asim/.local/share/virtualenvs/test-hf2hE-kd/bin/python

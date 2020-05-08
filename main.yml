@@ -1,0 +1,43 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: no
+
+  tasks:
+  - name: run local python script
+    shell: ./main.py
+    register: mystdout
+
+    # multiline stdout
+  - debug: msg="{{ mystdout.stdout_lines }}"
+
+  - name: "INGRESS - Create and associate production DMZ network ACL with DMZ subnets"
+    ec2_vpc_nacl:
+      vpc_id: vpc-092733162f7694d18
+      name: prod-dmz-nacl
+      region: "{{ region }}"
+      subnets: ['mysubnet3', 'mysubnet2']
+      tags:
+        CostCode: CC1234
+        Project: phoenix
+        Description: production DMZ
+      ingress:
+          # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code, port from, port to
+          - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
+          - [201, 'tcp', 'allow', '0.0.0.0/0', null, null, 80, 80]
+          - [202, 'icmp', 'allow', '0.0.0.0/0', 0, 8]
+      state: 'present'
+
+  - name: "EGRESS - Create and associate production DMZ network ACL with DMZ subnets"
+    ec2_vpc_nacl:
+      vpc_id: vpc-092733162f7694d18
+      name: prod-dmz-nacl
+      region: "{{ region }}"
+      subnets: ['mysubnet3', 'mysubnet2']
+      tags:
+        CostCode: CC1234
+        Project: phoenix
+        Description: production DMZ
+      egress:
+          - [200, 'all', 'allow', '0.0.0.0/0', null, null, null, null]
+      state: 'present'
