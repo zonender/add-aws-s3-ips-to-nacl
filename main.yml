@@ -52,7 +52,7 @@
       ingress:
           # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code, port from, port to
           # - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
-          - ["{{ rule_no | int + 0 }}", "{{ protocol }}", "{{ allow_deny }}", "{{ cidr }}", "{{ icmp_type }}", "{{ icmp_code }}", "{{ port_from | int + 0 }}", "{{ port_to | int + 0 }}"]
+          - ["{{ rule_no }}", "{{ protocol }}", "{{ allow_deny }}", "{{ cidr }}", "{{ icmp_type }}", "{{ icmp_code }}", "{{ port_from|int }}", "{{ port_to|int }}"]
       state: 'present'
     loop: "{{ from_lookup_with_from_json | json_query('ingress[*]') }}"
 
