@@ -26,18 +26,32 @@
   #####################################################
 
     # looping attemps ingress
-  - name: "Define egress vars"
+  - name: "Define json"
     set_fact:
-      rule_no: "{{ item.rule_no }}"
-      protocol: "{{ item.protocol }}"
-      allow_deny: "{{ item.allow_deny }}"
-      cidr: "{{ item.cidr }}"
-      icmp_code: "{{ item.icmp_code }}"
-      icmp_type: "{{ item.icmp_type }}"
-      port_from: "{{ item.port_from }}"
-      port_to: "{{ item.port_to }}"
+      json:  "{{lookup('file','nacl.json')}}"
+      # rule_no: "{{ item.rule_no }}"
+      # protocol: "{{ item.protocol }}"
+      # allow_deny: "{{ item.allow_deny }}"
+      # cidr: "{{ item.cidr }}"
+      # icmp_code: "{{ item.icmp_code }}"
+      # icmp_type: "{{ item.icmp_type }}"
+      # port_from: "{{ item.port_from }}"
+      # port_to: "{{ item.port_to }}"
 
-    loop: "{{ from_lookup_with_from_json | json_query('egress[*]') }}"
+    # loop: "{{ from_lookup_with_from_json | json_query('egress[*]') }}"
+
+  # - name: "Define egress vars"
+  #   set_fact:
+  #     rule_no: "{{ item | combine({ 'rule_no': item.rule_no | int }) }}"
+  #     protocol: "{{ item.protocol }}"
+  #     allow_deny: "{{ item.allow_deny }}"
+  #     cidr: "{{ item.cidr }}"
+  #     icmp_code: "{{ item.icmp_code }}"
+  #     icmp_type: "{{ item.icmp_type }}"
+  #     port_from: "{{ item | combine({ 'port_from': item.port_from | int }) }}"
+  #     port_to: "{{ item | combine({ 'port_to': item.port_to | int }) }}"
+  #     # json_f: "{{ item | combine({ 'rule_no': item.rule_no | int }) }}"
+  #   with_items: "{{ json.ingress }}"
 
   - name: "INGRESS - Create and associate production DMZ network ACL with DMZ subnets"
     ec2_vpc_nacl:
@@ -52,9 +66,33 @@
       ingress:
           # rule no, protocol, allow/deny, cidr, icmp_type, icmp_code, port from, port to
           # - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
-          - ["{{ rule_no }}", "{{ protocol }}", "{{ allow_deny }}", "{{ cidr }}", "{{ icmp_type }}", "{{ icmp_code }}", "{{ port_from|int }}", "{{ port_to|int }}"]
+          # "['{{ rule_no | int }}'... "
+          - ["{{ item | combine({ 'rule_no': item.rule_no | int }) }}", "{{ item.protocol }}", "{{ item.allow_deny }}", "{{ item.cidr }}', '{{ item.icmp_type }}', '{{ item.icmp_code }}', "{{ item | combine({ 'port_from': item.port_from | int }) }}", "{{ item | combine({ 'port_to': item.port_to | int }) }}"]
       state: 'present'
-    loop: "{{ from_lookup_with_from_json | json_query('ingress[*]') }}"
+    with_items: "{{ json.ingress }}"
+    # loop: "{{ from_lookup_with_from_json | json_query('ingress[*]') }}"
+
+
+
+# ---
+# - hosts: localhost
+#   tasks:
+
+#   - name: set facts
+#     set_fact:
+#       rule_no: "200"
+#       json:  "{{lookup('file','data.json')}}"
+
+#   - name: debug
+#     set_fact:
+#       json_f: "{{ item | combine({ 'rule_no': item.rule_no | int }) }}"
+#     with_items: "{{ json.egress }}"
+
+#   - name: debug
+#     debug: msg="{{ json_f.rule_no | type_debug }}"
+
+
+
 
 
 
