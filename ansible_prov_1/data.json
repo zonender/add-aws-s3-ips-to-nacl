@@ -1,0 +1,106 @@
+{
+    "egress": [
+        {
+            "rule_no": "200",
+            "protocol": "tcp",
+            "allow_deny": "allow",
+            "cidr": "54.231.0.0/17",
+            "icmp_type": "null",
+            "icmp_code": "null",
+            "port_from": "1234",
+            "port_to": "1234"
+        },
+        {
+            "rule_no": "201",
+            "protocol": "tcp",
+            "allow_deny": "allow",
+            "cidr": "52.216.0.0/15",
+            "icmp_type": "null",
+            "icmp_code": "null",
+            "port_from": "1234",
+            "port_to": "1234"
+        },
+        {
+            "rule_no": "202",
+            "protocol": "tcp",
+            "allow_deny": "allow",
+            "cidr": "3.5.16.0/21",
+            "icmp_type": "null",
+            "icmp_code": "null",
+            "port_from": "1234",
+            "port_to": "1234"
+        },
+        {
+            "rule_no": "203",
+            "protocol": "tcp",
+            "allow_deny": "allow",
+            "cidr": "52.92.16.0/20",
+            "icmp_type": "null",
+            "icmp_code": "null",
+            "port_from": "1234",
+            "port_to": "1234"
+        },
+        {
+            "rule_no": "204",
+            "protocol": "tcp",
+            "allow_deny": "allow",
+            "cidr": "3.5.0.0/20",
+            "icmp_type": "null",
+            "icmp_code": "null",
+            "port_from": "1234",
+            "port_to": "1234"
+        }
+    ],
+    "ingress": [
+        {
+            "rule_no": "200",
+            "protocol": "tcp",
+            "allow_deny": "allow",
+            "cidr": "54.231.0.0/17",
+            "icmp_type": "null",
+            "icmp_code": "null",
+            "port_from": "1234",
+            "port_to": "1234"
+        },
+        {
+            "rule_no": "201",
+            "protocol": "tcp",
+            "allow_deny": "allow",
+            "cidr": "52.216.0.0/15",
+            "icmp_type": "null",
+            "icmp_code": "null",
+            "port_from": "1234",
+            "port_to": "1234"
+        },
+        {
+            "rule_no": "202",
+            "protocol": "tcp",
+            "allow_deny": "allow",
+            "cidr": "3.5.16.0/21",
+            "icmp_type": "null",
+            "icmp_code": "null",
+            "port_from": "1234",
+            "port_to": "1234"
+        },
+        {
+            "rule_no": "203",
+            "protocol": "tcp",
+            "allow_deny": "allow",
+            "cidr": "52.92.16.0/20",
+            "icmp_type": "null",
+            "icmp_code": "null",
+            "port_from": "1234",
+            "port_to": "1234"
+        },
+        {
+            "rule_no": "204",
+            "protocol": "tcp",
+            "allow_deny": "allow",
+            "cidr": "3.5.0.0/20",
+            "icmp_type": "null",
+            "icmp_code": "null",
+            "port_from": "1234",
+            "port_to": "1234"
+        }
+    ]
+}
