@@ -24,19 +24,20 @@
   #     msg: "{{ rule_no }} - {{ protocol }}"
 
   #####################################################
+  #####################################################
+  #####################################################
 
-    # looping attemps ingress
-  - name: "Define json"
+  - name: "Set facts - Define json and vars"
     set_fact:
+      rule_no: "200"
+      protocol: "tcp"
+      allow_deny: "allow"
+      cidr: "54.231.0.0/17"
+      icmp_type: "null"
+      icmp_code: "null"
+      port_from: "1234"
+      port_to: "1234"
       json:  "{{lookup('file','nacl.json')}}"
-      # rule_no: "{{ item.rule_no }}"
-      # protocol: "{{ item.protocol }}"
-      # allow_deny: "{{ item.allow_deny }}"
-      # cidr: "{{ item.cidr }}"
-      # icmp_code: "{{ item.icmp_code }}"
-      # icmp_type: "{{ item.icmp_type }}"
-      # port_from: "{{ item.port_from }}"
-      # port_to: "{{ item.port_to }}"
 
   - name: "INGRESS - Create and associate production DMZ network ACL with DMZ subnets"
     ec2_vpc_nacl:
@@ -51,11 +52,14 @@
       ingress:
           # Example:
           # - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
-          - ["{{ item | combine({ 'rule_no': item.rule_no | int }) }}", "{{ item.protocol }}", "{{ item.allow_deny }}", "{{ item.cidr }}", "{{ item.icmp_type }}", "{{ item.icmp_code }}", "{{ item | combine({ 'port_from': item.port_from | int }) }}", "{{ item | combine({ 'port_to': item.port_to | int }) }}"]
+          - ["{{ item.rule_no | combine({ 'rule_no': item.rule_no | int }) }}", "{{ item.protocol }}", "{{ item.allow_deny }}", "{{ item.cidr }}", "{{ item.icmp_type }}", "{{ item.icmp_code }}", "{{ item.port_from | combine({ 'port_from': item.port_from | int }) }}", "{{ item.port_to | combine({ 'port_to': item.port_to | int }) }}"]
       state: 'present'
+
     with_items: "{{ json.ingress }}"
 
-
+  #####################################################
+  #####################################################
+  #####################################################
 
 # ---
 # - hosts: localhost

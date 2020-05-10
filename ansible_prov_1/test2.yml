@@ -4,13 +4,14 @@
 
   - name: set facts
     set_fact:
-      # rule_no: "200"
       json:  "{{lookup('file','data.json')}}"
 
   - name: debug
     set_fact:
-      json_f: "{{ item | combine({ 'rule_no': item.port_from | int }) }}"
+      json_rule_no: "{{ item | combine({ 'rule_no': item.rule_no | int }) }}"
+      json_port_from: "{{ item | combine({ 'port_from': item.port_from | int }) }}"
+      json_port_to: "{{ item | combine({ 'port_to': item.port_to | int }) }}"
     with_items: "{{ json.egress }}"
 
   - name: debug
-    debug: msg="{{ json_f.rule_no | type_debug }}"
+    debug: msg="{{ json_rule_no.rule_no }} == {{ json_port_from.port_from }} == {{ json_port_to.port_to }}"
