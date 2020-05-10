@@ -29,17 +29,13 @@
 
   - name: "Set facts - Define json and vars"
     set_fact:
-      rule_no: "200"
-      protocol: "tcp"
-      allow_deny: "allow"
-      cidr: "54.231.0.0/17"
-      icmp_type: "null"
-      icmp_code: "null"
-      port_from: "1234"
-      port_to: "1234"
       json:  "{{lookup('file','nacl.json')}}"
 
   - name: "INGRESS - Create and associate production DMZ network ACL with DMZ subnets"
+    vars:
+      jf_rule_no: "{{ item | combine({ 'rule_no': item.rule_no | int }) }}"
+      jf_port_from: "{{ item | combine({ 'port_from': item.port_from | int }) }}"
+      jf_port_to: "{{ item | combine({ 'port_to': item.port_to | int }) }}"
     ec2_vpc_nacl:
       vpc_id: vpc-092733162f7694d18
       name: prod-dmz-nacl
@@ -52,7 +48,7 @@
       ingress:
           # Example:
           # - [200, 'tcp', 'allow', '0.0.0.0/0', null, null, 22, 22]
-          - ["{{ item.rule_no | combine({ 'rule_no': item.rule_no | int }) }}", "{{ item.protocol }}", "{{ item.allow_deny }}", "{{ item.cidr }}", "{{ item.icmp_type }}", "{{ item.icmp_code }}", "{{ item.port_from | combine({ 'port_from': item.port_from | int }) }}", "{{ item.port_to | combine({ 'port_to': item.port_to | int }) }}"]
+          - ["{{ jf_rule_no.rule_no }}", "{{ item.protocol }}", "{{ item.allow_deny }}", "{{ item.cidr }}", "{{ item.icmp_type }}", "{{ item.icmp_code }}", "{{ jf_port_from.port_from }}", "{{ jf_port_to.port_to }}"]
       state: 'present'
 
     with_items: "{{ json.ingress }}"
